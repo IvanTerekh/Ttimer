@@ -12,24 +12,20 @@ import (
 	"net/url"
 	"crypto/rand"
 	"log"
-	"fmt"
 )
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
-	domain := os.Getenv("AUTH0_DOMAIN")
-
-
-	fmt.Println(domain)
+	authDomain := os.Getenv("AUTH0_DOMAIN")
 
 	conf := &oauth2.Config{
 		ClientID:     os.Getenv("AUTH0_CLIENT_ID"),
 		ClientSecret: os.Getenv("AUTH0_CLIENT_SECRET"),
-		RedirectURL:  "http://" + os.Getenv("TTIMER_HOST") + ":" + os.Getenv("TTIMER_PORT"),
+		RedirectURL:  "http://" + os.Getenv("TTIMER_DOMAIN"),
 		Scopes:       []string{"openid", "profile"},
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://" + domain + "/authorize",
-			TokenURL: "https://" + domain + "/oauth/token",
+			AuthURL:  "https://" + authDomain + "/authorize",
+			TokenURL: "https://" + authDomain + "/oauth/token",
 		},
 	}
 	state := r.URL.Query().Get("state")
@@ -54,7 +50,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Getting now the userInfo
 	client := conf.Client(context.TODO(), token)
-	resp, err := client.Get("https://" + domain + "/userinfo")
+	resp, err := client.Get("https://" + authDomain + "/userinfo")
 	if err != nil {
 		handleError(err, w)
 		return
@@ -97,7 +93,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	conf := &oauth2.Config{
 		ClientID:     os.Getenv("AUTH0_CLIENT_ID"),
 		ClientSecret: os.Getenv("AUTH0_CLIENT_SECRET"),
-		RedirectURL:  "http://" + os.Getenv("TTIMER_HOST") + ":" + os.Getenv("TTIMER_PORT") + "/callback",
+		RedirectURL:  "http://" + os.Getenv("TTIMER_DOMAIN") + "/callback",
 		Scopes:       []string{"openid", "profile"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://" + domain + "/authorize",
@@ -158,7 +154,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	Url.Path += "/v2/logout"
 	parameters := url.Values{}
-	parameters.Add("returnTo", "http://" + os.Getenv("TTIMER_HOST") + ":" + os.Getenv("TTIMER_PORT"))
+	parameters.Add("returnTo", "http://" + os.Getenv("TTIMER_DOMAIN"))
 	parameters.Add("client_id", os.Getenv("AUTH0_CLIENT_ID"))
 	Url.RawQuery = parameters.Encode()
 

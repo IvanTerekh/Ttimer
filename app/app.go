@@ -6,7 +6,6 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"ttimer/scrambles"
-	"ttimer/db"
 	"os"
 )
 
@@ -21,13 +20,7 @@ func init() {
 		log.Print("Error loading .env file")
 	}
 
-	err = db.Test()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(os.Getenv("TTIMER_HOST") + "DB connection: OK")
-
-	Store = sessions.NewFilesystemStore("", []byte("something-very-secret"))
+	Store = sessions.NewFilesystemStore("", []byte(os.Getenv("SESSION_KEY")))
 
 	Scrambler = scrambles.NewScrambleProvider(nil)
 	log.Println("Scramblers provider initialized")

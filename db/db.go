@@ -9,6 +9,16 @@ import (
 	"os"
 )
 
+func init() {
+	db := openDb()
+	defer db.Close()
+	err := db.Ping()
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Printf("DB connection: OK. Host: %s:%s", os.Getenv("DB_IP"), os.Getenv("DB_PORT"))
+}
+
 func openDb() *sql.DB {
 	db, err := sql.Open("mysql",
 		os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASSWORD")+
@@ -18,12 +28,6 @@ func openDb() *sql.DB {
 	}
 
 	return db
-}
-
-func Test() error {
-	db := openDb()
-	defer db.Close()
-	return db.Ping()
 }
 
 func SelectResults(session *model.Session) ([]model.Result, error) {

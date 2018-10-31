@@ -33,8 +33,12 @@ class Time extends React.Component {
         this.keyup = this.keyup.bind(this);
         this.start = this.start.bind(this);
         this.stop = this.stop.bind(this);
-        document.onkeydown = (e) => {if (e.code === "Space") this.keydown(e)};
-        document.onkeyup = (e) => {if (e.code === "Space") this.keyup(e)};
+        document.onkeydown = (e) => {
+            if (e.code === "Space") this.keydown(e)
+        };
+        document.onkeyup = (e) => {
+            if (e.code === "Space") this.keyup(e)
+        };
     }
 
     start() {
@@ -61,7 +65,8 @@ class Time extends React.Component {
             centis: res,
             running: false
         });
-        document.ontouchstart = () =>{};
+        document.ontouchstart = () => {
+        };
     }
 
     keydown(e) {
@@ -101,7 +106,7 @@ class Time extends React.Component {
     }
 
     render() {
-        return <div  onTouchStart={this.keydown} onTouchEnd={this.keyup}>
+        return <div onTouchStart={this.keydown} onTouchEnd={this.keyup}>
             <h1 className={"time " + this.state.timeState}>{format(this.state.centis)}</h1>
         </div>
     }
@@ -165,7 +170,7 @@ class SessionSelector extends React.Component {
             name: "",
             selectedSession: "",
             sessions: [{name: "main", event: "3x3"}],
-            events: ["2x2", "3x3", "4x4", "5x5", "pyra", "mega"]
+            events: ["3x3"]
         };
 
         this.deleteSession = this.deleteSession.bind(this);
@@ -297,19 +302,20 @@ class SessionSelector extends React.Component {
 
         const adder =
             <form onSubmit={this.handleAdding}>
-                {/*<div className="input-group">*/}
-                <select className="form-select" value={this.state.event} onChange={this.handleEventChange}>
-                    {this.state.events.map((event, index) =>
-                        <option key={event} value={event}>
-                            {event}
-                        </option>
-                    )}
-                </select>
-                <input className="form-input" type="text" value={this.state.name} placeholder="Session name"
-                       onChange={this.handleNameChange}/>
-                <input className="btn btn-primary input-group-btn" type="submit" value="submit"/>
-                <button onClick={() => this.setState({selecting: true})} className="btn input-group-btn">Cancel</button>
-                {/*</div>*/}
+                <div className="input-group">
+                    <select className="form-select" value={this.state.event} onChange={this.handleEventChange}>
+                        {this.state.events.map((event, index) =>
+                            <option key={event} value={event}>
+                                {event}
+                            </option>
+                        )}
+                    </select>
+                    <input className="form-input" type="text" value={this.state.name} placeholder="Session name"
+                           onChange={this.handleNameChange}/>
+                    <input className="btn btn-primary input-group-btn" type="submit" value="submit"/>
+                    <button onClick={() => this.setState({selecting: true})} className="btn input-group-btn">Cancel
+                    </button>
+                </div>
             </form>;
 
 
@@ -442,13 +448,13 @@ class Timer extends React.Component {
 
     render() {
         return (
-            <div className="container columns col-gapless" >
-                <div className="column col-8 col-md-12 col-mx-auto">
+            <div className="container columns col-gapless">
+                <div className="column col-8 col-lg-12 col-mx-auto">
                     <Header auth={this.props.auth}/>
                     <SessionSelector setActiveSession={this.setActiveSession} auth={this.props.auth}/>
                     <Time saveResult={this.saveResult} scramble={this.state.scramble} centis={this.state.centis}/>
                     <div className="columns">
-                        <div className="scramble col-10 col-md-12 col-mx-auto">{this.state.scramble}</div>
+                        <div className="scramble col-10 col-lg-12 col-mx-auto">{this.state.scramble}</div>
                     </div>
                     <button className="btn" onClick={this.deleteLast}>delete last solve</button>
                     <Statistics results={this.state.results} stats={this.state.stats}/>
@@ -483,20 +489,24 @@ class Header extends React.Component {
     render() {
         const auth = this.props.auth;
 
-        const loggedIn = <div>
+        const loggedIn = <span>
             <span className="name">{this.state.profile.name}</span>
             <a href="/logout">Logout</a>
-        </div>;
+        </span>;
 
-        const loggedOut = <div>
-            <a href="/login">login</a>
-        </div>;
+        const loggedOut = <span>
+            <a href="/login" className="btn btn-link">login</a>
+        </span>;
 
         return (
-            <div className="header">
-                <div className="left">BEST TIMER EVER(under development)</div>
-                <div className="right auth">{auth ? loggedIn : loggedOut}</div>
-            </div>
+            <header className="navbar">
+                <section className="navbar-section">
+                    <span className="title">T-timer</span>
+                </section>
+                <section className="navbar-section">
+                    {auth ? loggedIn : loggedOut}
+                </section>
+            </header>
         )
     }
 }

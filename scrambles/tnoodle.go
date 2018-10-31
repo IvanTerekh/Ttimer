@@ -27,7 +27,7 @@ var tnoodleNames = map[string]string{
 }
 
 type ScrambleContainer struct {
-	Scrambles []string `scrambles`
+	Scrambles []string `json:"scrambles"`
 }
 
 func genScramble(event string) (string, error) {

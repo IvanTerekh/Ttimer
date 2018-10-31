@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "ttimer/app"
+	_ "ttimer/db"
 	"ttimer/server"
 )
 
