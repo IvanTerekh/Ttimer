@@ -498,15 +498,15 @@ class Header extends React.Component {
 
         const loggedIn = <span>
             <span className="name">{this.state.profile.name}</span>
-            <a href="/logout">Logout</a>
+            <a href="/logout" className="btn btn-link bigfont">Logout</a>
         </span>;
 
         const loggedOut = <span>
-            <a href="/login" className="btn btn-link">Login</a>
+            <a href="/login" className="btn btn-link bigfont">Login</a>
         </span>;
 
         return (
-            <header className="navbar">
+            <header className="navbar timernavbar bigfont">
                 <section className="navbar-section">
                     <span className="title">T-timer</span>
                 </section>

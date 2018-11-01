@@ -19,6 +19,14 @@ body {
     color: black !important;
 }
 
+.bigfont {
+    font-size: 1.4rem !important;
+}
+
+.timernavbar {
+    margin-bottom: .4rem;
+}
+
 p {
     margin: 0 !important;
 }
