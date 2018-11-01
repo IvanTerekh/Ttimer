@@ -479,8 +479,15 @@ class Header extends React.Component {
         if (auth) {
             axios.get("/api/userinfo")
                 .then(response => {
+                    let profile = response.data;
+                    if (profile.sub.startsWith("vkontakte")) {
+                        profile.formatedName = profile.given_name + ' ' + profile.family_name;
+                    } else {//if (profile.sub.startsWith("google-oauth2")) {
+                        profile.formatedName = profile.name;
+                    }
+
                     this.setState({
-                        profile: response.data
+                        profile: profile
                     });
                 })
         }
@@ -495,7 +502,7 @@ class Header extends React.Component {
         </span>;
 
         const loggedOut = <span>
-            <a href="/login" className="btn btn-link">login</a>
+            <a href="/login" className="btn btn-link">Login</a>
         </span>;
 
         return (
