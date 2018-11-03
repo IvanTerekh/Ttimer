@@ -117,12 +117,13 @@ function ResultList(props) {
     return <p className="results">{
         results.map((result) =>
             <ListItem key={result.datetime}
-                      value={result.centis}/>
+                      value={result.centis}
+                      scramble={result.scramble}/>
         )}</p>
 }
 
 function ListItem(props) {
-    return <span>{format(props.value)} </span>;
+    return <span title={props.scramble}>{format(props.value)} </span>;
 }
 
 function Statistics(props) {
@@ -312,7 +313,7 @@ class SessionSelector extends React.Component {
                     </select>
                     <input className="form-input" type="text" value={this.state.name} placeholder="Session name"
                            onChange={this.handleNameChange}/>
-                    <input className="btn btn-primary input-group-btn" type="submit" value="submit"/>
+                    <input className="btn btn-primary input-group-btn" type="submit" value="Create"/>
                     <button onClick={() => this.setState({selecting: true})} className="btn input-group-btn">Cancel
                     </button>
                 </div>
@@ -394,7 +395,7 @@ class Timer extends React.Component {
             });
         this.setState({activeSession: session});
         this.updateResults(session);
-        setTimeout(this.updateNextScramble, 700);
+        setTimeout(this.updateNextScramble, 2000);
     }
 
     updateResults(session) {
@@ -434,15 +435,18 @@ class Timer extends React.Component {
                 })
                     .then(() => {
                         this.setState({
-                            results: newResults
+                            results: newResults,
+                            stats: calcStats(newResults)
                         });
                     })
             } else {
                 localStorage.setItem(this.state.activeSession.event + this.state.activeSession.name, JSON.stringify(newResults));
                 this.setState(state => ({
-                    results: newResults
+                    results: newResults,
+                    stats: calcStats(newResults)
                 }))
             }
+
         }
     }
 
@@ -497,24 +501,22 @@ class Header extends React.Component {
     render() {
         const auth = this.props.auth;
 
-        const loggedIn = <span>
-            <span className="name">{this.state.profile.formatedName}</span>
-            <a href="/logout" className="btn btn-link bigfont">Logout</a>
-        </span>;
+        const loggedIn = <section className="navbar-section">
+            <div className="name">{this.state.profile.formatedName}</div>
+            <div><a href="/logout" className="btn-link bigfont">Logout</a></div>
+        </section>;
 
-        const loggedOut = <span>
+        const loggedOut = <section className="navbar-section">
             <a href="/login" className="btn-link bigfont">Login</a>
-        </span>;
+        </section>;
 
-        return (
-            <header className="navbar timernavbar bigfont">
-                <section className="navbar-section">
-                    <span className="title">T-timer</span>
-                </section>
-                <section className="navbar-section">
+        return (<div>
+
+                <header className="navbar timernavbar bigfont">
+                    <section className="navbar-section title">T-timer</section>
                     {auth ? loggedIn : loggedOut}
-                </section>
-            </header>
+                </header>
+            </div>
         )
     }
 }
