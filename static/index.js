@@ -127,38 +127,53 @@ function ListItem(props) {
 }
 
 function Statistics(props) {
+    const containerStyle = {
+        width: (props.stats[100].best !== Infinity)
+        + (props.stats[1000].best !== Infinity)
+        + 8 + format(props.stats.worst).length + 'em'
+    };
     const results = props.results.map((result) => result.centis);
     return <div>
-        <div className="stats">
+        <div className="stats" style={containerStyle}>
             {results.length > 0 &&
-            <div>
-                <p>Avg: {format(props.stats.avg)}, Count: {props.stats.n}</p>
-                <p>Best: {format(props.stats.best)}, Worst: {format(props.stats.worst)}</p>
+            <div className="columns col-gapless">
+                <div className="col-6">Avg:<span className="right">{format(props.stats.avg)}</span></div>
+                <div className="col-6 right-stats">Count:<span className="right">{props.stats.n}</span></div>
+                <div className="col-6">Best:<span className="right">{format(props.stats.best)}</span></div>
+                <div className="col-6 right-stats">Worst:<span className="right">{format(props.stats.worst)}</span>
+                </div>
+                {avgs.map((avgOf) => [
+                    <AvgCurrent key={avgOf} avgOf={avgOf} current={props.stats[avgOf].best} n={props.stats.n}/>,
+                    <AvgBest key={avgOf} avgOf={avgOf} best={props.stats[avgOf].best} n={props.stats.n}/>,
+                ])}
             </div>
             }
-            <Avg n={5} avg={avgOf(results, 5)} best={props.stats[5].best} results={props.results}/>
-            <Avg n={12} avg={avgOf(results, 12)} best={props.stats[12].best} results={props.results}/>
-            <Avg n={50} avg={avgOf(results, 50)} best={props.stats[50].best} results={props.results}/>
-            <Avg n={100} avg={avgOf(results, 100)} best={props.stats[100].best} results={props.results}/>
-            <Avg n={1000} avg={avgOf(results, 1000)} best={props.stats[1000].best} results={props.results}/>
         </div>
         <ResultList results={props.results}/>
     </div>
 }
 
-class Avg extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+function AvgBest(props) {
+    const results = props.results;
+    const avgOf = props.avgOf;
+    const n = props.n;
 
-    render() {
-        const results = this.props.results;
-        const n = this.props.n;
-        if (results.length < n) {
-            return <div/>
-        } else {
-            return <p>Avg{n}: {format(this.props.avg)}, Best{n}: {format(this.props.best)}</p>
-        }
+    if (props.best === Infinity) {
+        return null;
+    } else {
+        return <div className="col-6 right-stats">Best{avgOf}:<span className="right">{format(props.best)}</span></div>
+    }
+}
+
+function AvgCurrent(props) {
+    const results = props.results;
+    const avgOf = props.avgOf;
+    const n = props.n;
+
+    if (props.current === Infinity) {
+        return null;
+    } else {
+        return <div className="col-6">Avg{avgOf}:<span className="right left-stats">{format(props.current)}</span></div>
     }
 }
 
@@ -235,6 +250,7 @@ class SessionSelector extends React.Component {
                         updateState();
                     })
             } else {
+                localStorage.setItem(deleted.event + deleted.name, JSON.stringify([]));
                 updateState();
                 localStorage.setItem("sessions", JSON.stringify(newSessions));
             }
@@ -417,7 +433,6 @@ class Timer extends React.Component {
         } else {
             let results = JSON.parse(localStorage.getItem(session.event + session.name));
             results = results === null ? [] : results;
-            console.log(results);
             this.setState({
                 results: results,
                 stats: calcStats(results)
@@ -484,7 +499,6 @@ class Header extends React.Component {
             axios.get("/api/userinfo")
                 .then(response => {
                     let profile = response.data;
-                    console.log(profile.sub);
                     if (profile.sub.startsWith("vkontakte")) {
                         profile.formatedName = profile.given_name + ' ' + profile.family_name;
                     } else {//if (profile.sub.startsWith("google-oauth2")) {

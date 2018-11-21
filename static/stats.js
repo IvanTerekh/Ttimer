@@ -46,7 +46,7 @@ function calcStats(res) {
 
     let stats = {};
     for (n of avgs) {
-        stats[n] = {best: Infinity}
+        stats[n] = {best: Infinity, current: avgOf(res, n)}
     }
 
     for (let i = 0; i <= res.length; i++) {
@@ -68,6 +68,7 @@ function updateStats(old, res) {
     let stats = Object.assign({}, old);
     for (let n of avgs) {
         stats[n].best = Math.min(old[n].best, avgOf(res, n));
+        stats[n].current = avgOf(res, n);
     }
     stats.best = Math.min(old.best, res[res.length-1]);
     stats.worst = Math.max(old.worst, res[res.length-1]);
