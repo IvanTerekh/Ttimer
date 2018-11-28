@@ -406,7 +406,8 @@ class Timer extends React.Component {
         axios.get('/api/scramble', {params: {event: session.event}})
             .then(response => {
                 this.setState({
-                    scramble: response.data
+                    scramble: response.data,
+                    nextScramble: response.data
                 })
             });
         this.setState({activeSession: session});
