@@ -1,11 +1,11 @@
 package scrambles
 
 import (
-	"net/http"
-	"io/ioutil"
 	"encoding/json"
-	"os"
+	"io/ioutil"
 	"log"
+	"net/http"
+	"os"
 )
 
 var tnoodleNames = map[string]string{
@@ -26,7 +26,7 @@ var tnoodleNames = map[string]string{
 	"skewb":  "skewb",
 }
 
-type ScrambleContainer struct {
+type scrambleContainer struct {
 	Scrambles []string `json:"scrambles"`
 }
 
@@ -39,12 +39,12 @@ func genScramble(event string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	scrJson, err := ioutil.ReadAll(resp.Body)
+	scrJSON, err := ioutil.ReadAll(resp.Body)
 
-	var scrContainer []ScrambleContainer
-	err = json.Unmarshal(scrJson, &scrContainer)
+	var scrContainer []scrambleContainer
+	err = json.Unmarshal(scrJSON, &scrContainer)
 	if err != nil {
-		log.Println("Error while unmurshalling event " + event + " json: " + string(scrJson))
+		log.Println("Error while unmurshalling event " + event + " json: " + string(scrJSON))
 		return "", err
 	}
 
