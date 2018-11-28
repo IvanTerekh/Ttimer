@@ -1,21 +1,16 @@
 package api
 
 import (
-	"net/http"
-	"ttimer/server/middleware"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"ttimer/app"
+	"ttimer/server/middleware"
 )
 
 var IsAuthenticatedHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	authenticated, err := middleware.IsAuthenticated(r)
-	if err != nil {
-		handleError(err, w)
-		return
-	}
-
+	authenticated := middleware.IsAuthenticated(w, r)
 	w.Write([]byte(fmt.Sprint(authenticated)))
 })
 

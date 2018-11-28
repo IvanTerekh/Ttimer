@@ -2,9 +2,9 @@ package scrambles
 
 import (
 	"log"
-	"time"
 	"os"
 	"strings"
+	"time"
 )
 
 type scramble struct {
@@ -38,7 +38,7 @@ var Events = []string{
 	"skewb",
 }
 
-func (sp *ScrambleProvider) Get(event string) string  {
+func (sp *ScrambleProvider) Get(event string) string {
 	event = trimSuffix(event)
 	sp.request <- event
 	return <-sp.get[event]
@@ -64,11 +64,11 @@ func (sp *ScrambleProvider) manage() {
 func NewScrambleProvider(finish chan int) *ScrambleProvider {
 	sp := ScrambleProvider{
 		scrambles: make(map[string]string),
-		finish: finish,
-		get: createGetChans(),
-		request: make(chan string),
-		update: make(chan scramble),
-		}
+		finish:    finish,
+		get:       createGetChans(),
+		request:   make(chan string),
+		update:    make(chan scramble),
+	}
 	sp.startUpdating()
 	go func() {
 		for {

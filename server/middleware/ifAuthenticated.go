@@ -1,19 +1,15 @@
 package middleware
 
 import (
-	"ttimer/app"
-	"net/http"
+	"github.com/gorilla/sessions"
 	"log"
+	"net/http"
+	"ttimer/app"
 )
 
 func IfAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		auth, err := IsAuthenticated(r)
-		if err != nil {
-			log.Println(err)
-			http.Error(w, "Server error", http.StatusInternalServerError)
-			return
-		}
+		auth := IsAuthenticated(w, r)
 
 		if auth {
 			next(w, r)
@@ -23,12 +19,15 @@ func IfAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func IsAuthenticated(r *http.Request) (bool, error) {
+func IsAuthenticated(w http.ResponseWriter, r *http.Request) bool {
 	session, err := app.Store.Get(r, "auth-session")
 	if err != nil {
-		return false, err
+		options := sessions.Options{MaxAge: -1}
+		sessions.NewCookie("auth-session", "_", &options)
+		log.Println(err)
+		return false
 	}
 
 	_, ok := session.Values["profile"]
-	return ok, nil
+	return ok
 }
