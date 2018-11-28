@@ -106,7 +106,7 @@ class Time extends React.Component {
     }
 
     render() {
-        return <div onTouchStart={this.keydown} onTouchEnd={this.keyup}>
+        return <div onTouchStart={this.keydown} title='Hold "Space" to start.' onTouchEnd={this.keyup}>
             <h1 className={"time " + this.state.timeState}>{format(this.state.centis)}</h1>
         </div>
     }
@@ -117,47 +117,63 @@ function ResultList(props) {
     return <p className="results">{
         results.map((result) =>
             <ListItem key={result.datetime}
-                      value={result.centis}/>
+                      value={result.centis}
+                      scramble={result.scramble}/>
         )}</p>
 }
 
 function ListItem(props) {
-    return <span>{format(props.value)} </span>;
+    return <span title={props.scramble}>{format(props.value)} </span>;
 }
 
 function Statistics(props) {
+    const containerStyle = {
+        width: (props.stats[100].best !== Infinity)
+        + (props.stats[1000].best !== Infinity)
+        + 8 + format(props.stats.worst).length + 'em'
+    };
     const results = props.results.map((result) => result.centis);
     return <div>
-        <div className="stats">
+        <div className="stats" style={containerStyle}>
             {results.length > 0 &&
-            <div>
-                <p>Avg: {format(props.stats.avg)}, Count: {props.stats.n}</p>
-                <p>Best: {format(props.stats.best)}, Worst: {format(props.stats.worst)}</p>
+            <div className="columns col-gapless">
+                <div className="col-6">Avg:<span className="right">{format(props.stats.avg)}</span></div>
+                <div className="col-6 right-stats">Count:<span className="right">{props.stats.n}</span></div>
+                <div className="col-6">Best:<span className="right">{format(props.stats.best)}</span></div>
+                <div className="col-6 right-stats">Worst:<span className="right">{format(props.stats.worst)}</span>
+                </div>
+                {avgs.map((avgOf) => [
+                    <AvgCurrent key={avgOf} avgOf={avgOf} current={props.stats[avgOf].best} n={props.stats.n}/>,
+                    <AvgBest key={avgOf} avgOf={avgOf} best={props.stats[avgOf].best} n={props.stats.n}/>,
+                ])}
             </div>
             }
-            <Avg n={5} avg={avgOf(results, 5)} best={props.stats[5].best} results={props.results}/>
-            <Avg n={12} avg={avgOf(results, 12)} best={props.stats[12].best} results={props.results}/>
-            <Avg n={50} avg={avgOf(results, 50)} best={props.stats[50].best} results={props.results}/>
-            <Avg n={100} avg={avgOf(results, 100)} best={props.stats[100].best} results={props.results}/>
-            <Avg n={1000} avg={avgOf(results, 1000)} best={props.stats[1000].best} results={props.results}/>
         </div>
         <ResultList results={props.results}/>
     </div>
 }
 
-class Avg extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+function AvgBest(props) {
+    const results = props.results;
+    const avgOf = props.avgOf;
+    const n = props.n;
 
-    render() {
-        const results = this.props.results;
-        const n = this.props.n;
-        if (results.length < n) {
-            return <div/>
-        } else {
-            return <p>Avg{n}: {format(this.props.avg)}, Best{n}: {format(this.props.best)}</p>
-        }
+    if (props.best === Infinity) {
+        return null;
+    } else {
+        return <div className="col-6 right-stats">Best{avgOf}:<span className="right">{format(props.best)}</span></div>
+    }
+}
+
+function AvgCurrent(props) {
+    const results = props.results;
+    const avgOf = props.avgOf;
+    const n = props.n;
+
+    if (props.current === Infinity) {
+        return null;
+    } else {
+        return <div className="col-6">Avg{avgOf}:<span className="right left-stats">{format(props.current)}</span></div>
     }
 }
 
@@ -234,6 +250,7 @@ class SessionSelector extends React.Component {
                         updateState();
                     })
             } else {
+                localStorage.setItem(deleted.event + deleted.name, JSON.stringify([]));
                 updateState();
                 localStorage.setItem("sessions", JSON.stringify(newSessions));
             }
@@ -312,7 +329,7 @@ class SessionSelector extends React.Component {
                     </select>
                     <input className="form-input" type="text" value={this.state.name} placeholder="Session name"
                            onChange={this.handleNameChange}/>
-                    <input className="btn btn-primary input-group-btn" type="submit" value="submit"/>
+                    <input className="btn btn-primary input-group-btn" type="submit" value="Create"/>
                     <button onClick={() => this.setState({selecting: true})} className="btn input-group-btn">Cancel
                     </button>
                 </div>
@@ -395,7 +412,7 @@ class Timer extends React.Component {
             });
         this.setState({activeSession: session});
         this.updateResults(session);
-        setTimeout(this.updateNextScramble, 700);
+        setTimeout(this.updateNextScramble, 2000);
     }
 
     updateResults(session) {
@@ -417,7 +434,6 @@ class Timer extends React.Component {
         } else {
             let results = JSON.parse(localStorage.getItem(session.event + session.name));
             results = results === null ? [] : results;
-            console.log(results);
             this.setState({
                 results: results,
                 stats: calcStats(results)
@@ -435,15 +451,18 @@ class Timer extends React.Component {
                 })
                     .then(() => {
                         this.setState({
-                            results: newResults
+                            results: newResults,
+                            stats: calcStats(newResults)
                         });
                     })
             } else {
                 localStorage.setItem(this.state.activeSession.event + this.state.activeSession.name, JSON.stringify(newResults));
                 this.setState(state => ({
-                    results: newResults
+                    results: newResults,
+                    stats: calcStats(newResults)
                 }))
             }
+
         }
     }
 
@@ -497,24 +516,22 @@ class Header extends React.Component {
     render() {
         const auth = this.props.auth;
 
-        const loggedIn = <span>
-            <span className="name">{this.state.profile.name}</span>
-            <a href="/logout" className="btn btn-link bigfont">Logout</a>
-        </span>;
+        const loggedIn = <section className="navbar-section">
+            <div className="name">{this.state.profile.formatedName}</div>
+            <div><a href="/logout" className="btn-link bigfont">Logout</a></div>
+        </section>;
 
-        const loggedOut = <span>
-            <a href="/login" className="btn btn-link bigfont">Login</a>
-        </span>;
+        const loggedOut = <section className="navbar-section">
+            <a href="/login" className="btn-link bigfont">Login</a>
+        </section>;
 
-        return (
-            <header className="navbar timernavbar bigfont">
-                <section className="navbar-section">
-                    <span className="title">T-timer</span>
-                </section>
-                <section className="navbar-section">
+        return (<div>
+
+                <header className="navbar timernavbar bigfont">
+                    <section className="navbar-section title">T-timer</section>
                     {auth ? loggedIn : loggedOut}
-                </section>
-            </header>
+                </header>
+            </div>
         )
     }
 }

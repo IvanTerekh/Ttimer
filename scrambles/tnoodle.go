@@ -22,7 +22,7 @@ var tnoodleNames = map[string]string{
 	"clock":  "clock",
 	"pyra":   "pyram",
 	"mega":   "minx",
-	"sq1":    "sq1",
+	"sq1":    "sq1fast",
 	"skewb":  "skewb",
 }
 

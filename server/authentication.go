@@ -2,16 +2,17 @@ package server
 
 import (
 	"context"
+	"crypto/rand"
 	_ "crypto/sha512"
+	"encoding/base64"
 	"encoding/json"
+	"github.com/gorilla/sessions"
 	"golang.org/x/oauth2"
+	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"ttimer/app"
-	"encoding/base64"
-	"net/url"
-	"crypto/rand"
-	"log"
 )
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +68,7 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err = app.Store.Get(r, "auth-session")
 	if err != nil {
+		log.Println(err)
 		handleError(err, w)
 		return
 	}
@@ -112,14 +114,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := app.Store.Get(r, "state")
 	if err != nil {
-		handleError(err, w)
+		deleteCookie("state", w)
+		deleteCookie("auth-session", w)
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 	session.Values["state"] = state
 	err = session.Save(r, w)
 	if err != nil {
 		handleError(err, w)
-
 		return
 	}
 
@@ -139,14 +142,10 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	session.Options.MaxAge = -1
 	app.Store.Save(r, w, session)
 
-
-
-
 	domain := os.Getenv("AUTH0_DOMAIN")
 
 	var Url *url.URL
 	Url, err = url.Parse("https://" + domain)
-
 	if err != nil {
 		handleError(err, w)
 		return
@@ -154,7 +153,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	Url.Path += "/v2/logout"
 	parameters := url.Values{}
-	parameters.Add("returnTo", "http://" + os.Getenv("TTIMER_DOMAIN"))
+	parameters.Add("returnTo", "http://"+os.Getenv("TTIMER_DOMAIN"))
 	parameters.Add("client_id", os.Getenv("AUTH0_CLIENT_ID"))
 	Url.RawQuery = parameters.Encode()
 
@@ -164,4 +163,10 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 func handleError(err error, w http.ResponseWriter) {
 	log.Panic(err)
 	http.Error(w, "Server error", http.StatusInternalServerError)
+}
+
+func deleteCookie(name string, w http.ResponseWriter) {
+	options := sessions.Options{MaxAge: -1}
+	cookie := sessions.NewCookie(name, "_", &options)
+	http.SetCookie(w, cookie)
 }
