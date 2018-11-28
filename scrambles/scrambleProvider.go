@@ -1,3 +1,4 @@
+// Package scrambles contains infrastructure for providing scrambles to user from tnoodle and other services.
 package scrambles
 
 import (
@@ -12,6 +13,7 @@ type scramble struct {
 	moves string
 }
 
+// ScrambleProvider contains all scrambles. It provides functions to update and get scrambles.
 type ScrambleProvider struct {
 	scrambles map[string]string
 	finish    chan int
@@ -20,6 +22,7 @@ type ScrambleProvider struct {
 	update    chan scramble
 }
 
+// Events contains all possible events.
 var Events = []string{
 	"2x2",
 	"3x3",
@@ -38,6 +41,7 @@ var Events = []string{
 	"skewb",
 }
 
+// Get returns an actual scramble for given event.
 func (sp *ScrambleProvider) Get(event string) string {
 	event = trimSuffix(event)
 	sp.request <- event
@@ -61,6 +65,7 @@ func (sp *ScrambleProvider) manage() {
 	}
 }
 
+// NewScrambleProvider creates an instance of scrambling provider
 func NewScrambleProvider(finish chan int) *ScrambleProvider {
 	sp := ScrambleProvider{
 		scrambles: make(map[string]string),
