@@ -128,9 +128,10 @@ function ListItem(props) {
 
 function Statistics(props) {
     const containerStyle = {
-        width: (props.stats[100].best !== Infinity)
+        width: 9.5
+        + (props.stats[100].best !== Infinity)
         + (props.stats[1000].best !== Infinity)
-        + 8 + format(props.stats.worst).length + 'em'
+        + format(props.stats.worst).length + 'em'
     };
     const results = props.results.map((result) => result.centis);
     return <div>
@@ -143,7 +144,7 @@ function Statistics(props) {
                 <div className="col-6 right-stats">Worst:<span className="right">{format(props.stats.worst)}</span>
                 </div>
                 {avgs.map((avgOf) => [
-                    <AvgCurrent key={avgOf} avgOf={avgOf} current={props.stats[avgOf].best} n={props.stats.n}/>,
+                    <AvgCurrent key={avgOf} avgOf={avgOf} current={props.stats[avgOf].current} n={props.stats.n}/>,
                     <AvgBest key={avgOf} avgOf={avgOf} best={props.stats[avgOf].best} n={props.stats.n}/>,
                 ])}
             </div>
