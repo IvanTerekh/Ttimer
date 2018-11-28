@@ -106,7 +106,7 @@ class Time extends React.Component {
     }
 
     render() {
-        return <div onTouchStart={this.keydown} onTouchEnd={this.keyup}>
+        return <div onTouchStart={this.keydown} title='Hold "Space" to start.' onTouchEnd={this.keyup}>
             <h1 className={"time " + this.state.timeState}>{format(this.state.centis)}</h1>
         </div>
     }
