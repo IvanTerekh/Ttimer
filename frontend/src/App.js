@@ -1,3 +1,10 @@
+import React, { Component } from 'react';
+import './App.css';
+import {updateStats, calcStats, avgs} from './stats';
+import styles from 'spectre.css';
+
+const axios = require('axios');
+
 function format(centis) {
     const hours = Math.floor(centis / (100 * 60 * 60)).toString();
     const minutes = Math.floor(centis % (100 * 60 * 60) / (100 * 60)).toString();
@@ -231,7 +238,7 @@ class SessionSelector extends React.Component {
     }
 
     deleteSession() {
-        if (confirm('Delete session?')) {
+        if (window.confirm('Delete session?')) {
             let deleted = this.state.selectedSession;
             let newSessions = this.state.sessions.filter(value => value !== deleted);
             let updateState = () => {
@@ -443,7 +450,7 @@ class Timer extends React.Component {
     }
 
     deleteLast() {
-        if (confirm('Delete last solve?')) {
+        if (window.confirm('Delete last solve?')) {
             const newResults = this.state.results.slice(0, -1);
             if (this.props.auth) {
                 axios.post('/api/deleteresults', {
@@ -566,7 +573,4 @@ class App extends React.Component {
     }
 }
 
-ReactDOM.render(
-    <App/>,
-    document.getElementById('app')
-);
+export default App;
