@@ -14,11 +14,11 @@ export default class Time extends React.Component {
         super(props);
 
         this.state = {
-            running: false,
             timeState: "usual",
             centis: 0
         };
 
+        this.running = false;
         this.keydown = this.keydown.bind(this);
         this.keyup = this.keyup.bind(this);
         this.start = this.start.bind(this);
@@ -32,18 +32,17 @@ export default class Time extends React.Component {
     }
 
     start() {
-        this.setState({
-            running: true,
-            startTime: Date.now()
-        });
+        this.running = true;
+        this.startTime = Date.now();
 
         this.timerId = setInterval(
-            () => this.tick(), 1000/60);
+            () => this.tick(), 1000 / 60);
         document.ontouchstart = this.keydown;
+        document.onkeydown = this.keydown;
     }
 
     stop() {
-        const res = Math.floor((Date.now() - this.state.startTime) / 10);
+        const res = Math.floor((Date.now() - this.startTime) / 10);
         clearInterval(this.timerId);
         this.props.saveResult({
             centis: res,
@@ -51,17 +50,20 @@ export default class Time extends React.Component {
             penalty: false,
             datetime: currentDatetime()
         });
+        this.running = false;
         this.setState({
-            centis: res,
-            running: false
+            centis: res
         });
         document.ontouchstart = () => {
+        };
+        document.onkeydown = (e) => {
+            if (e.code === "Space") this.keydown(e)
         };
     }
 
     keydown(e) {
         e.preventDefault();
-        if (this.state.running) {
+        if (this.running) {
             this.stop();
         } else if (isNaN(this.timeoutId)) {
             this.setState({
@@ -76,7 +78,7 @@ export default class Time extends React.Component {
     }
 
     keyup(e) {
-        if (!this.state.running) {
+        if (!this.running) {
             if (this.state.timeState === "ready") {
                 this.start()
             }
@@ -91,7 +93,7 @@ export default class Time extends React.Component {
 
     tick() {
         this.setState({
-            centis: Math.floor((Date.now() - this.state.startTime) / 10)
+            centis: Math.floor((Date.now() - this.startTime) / 10)
         });
     }
 
