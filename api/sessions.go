@@ -10,13 +10,13 @@ import (
 
 // ProvideSessionsHandler provides all sessions of current user.
 var ProvideSessionsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		handleError(err, w)
 		return
 	}
 
-	sessions, err := db.SelectSessions(userId)
+	sessions, err := db.SelectSessions(userID)
 	if err != nil {
 		handleError(err, w)
 		return
@@ -99,13 +99,13 @@ func retriveSessionsFromBody(r *http.Request) (*[]model.Session, error) {
 
 	sessions := cont.Sessions
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		return nil, err
 	}
 
 	for i := range sessions {
-		sessions[i].UserId = userId
+		sessions[i].UserID = userID
 	}
 
 	return &sessions, err
@@ -124,13 +124,13 @@ func retriveNewSession(r *http.Request) (*model.Session, error) {
 	var container sessionContainer
 	err = json.Unmarshal(jsonStr, &container)
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		return nil, err
 	}
 
 	session := model.Session{
-		UserId: userId,
+		UserID: userID,
 		Name:   container.Name,
 		Event:  container.Event,
 	}
@@ -138,16 +138,16 @@ func retriveNewSession(r *http.Request) (*model.Session, error) {
 	return &session, err
 }
 
-func retriveSessionFromUrl(r *http.Request) (*model.Session, error) {
+func retriveSessionFromURL(r *http.Request) (*model.Session, error) {
 
 	var session model.Session
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		return nil, err
 	}
 
-	session.UserId = userId
+	session.UserID = userID
 	session.Name = r.URL.Query().Get("sessionname")
 	session.Event = r.URL.Query().Get("event")
 	return &session, nil

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"ttimer/app"
-	"ttimer/server/middleware"
+	"ttimer/server/auth"
 )
 
 // IsAuthenticatedHandler tells client if user is authenticated.
 var IsAuthenticatedHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	authenticated := middleware.IsAuthenticated(w, r)
+	authenticated := auth.IsAuthenticated(r)
 	w.Write([]byte(fmt.Sprint(authenticated)))
 })
 
@@ -33,7 +33,7 @@ var UserInfoHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 	w.Write(str)
 })
 
-func retriveUserId(r *http.Request) (string, error) {
+func retriveUserID(r *http.Request) (string, error) {
 	authSession, err := app.Store.Get(r, "auth-session")
 	if err != nil {
 		return "", err

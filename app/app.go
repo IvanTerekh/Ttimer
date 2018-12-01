@@ -11,7 +11,9 @@ import (
 )
 
 var (
-	Store     *sessions.FilesystemStore
+	// Store is server store for auth session.
+	Store *sessions.FilesystemStore
+	// Scrambler stores and updates scrambles.
 	Scrambler *scrambles.ScrambleProvider
 )
 
@@ -23,7 +25,7 @@ func init() {
 
 	Store = sessions.NewFilesystemStore("", []byte(os.Getenv("SESSION_KEY")))
 
-	Scrambler = scrambles.NewScrambleProvider(nil)
+	Scrambler = scrambles.NewScrambleProvider()
 	log.Println("Scramblers provider initialized")
 
 	gob.Register(map[string]interface{}{})

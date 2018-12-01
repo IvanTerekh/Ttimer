@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"ttimer/api"
+	"ttimer/server/auth"
 	"ttimer/server/middleware"
 )
 
@@ -19,9 +20,9 @@ func Start() {
 		http.FileServer(http.Dir("static"))))
 	r.HandleFunc("/", HomeHandler)
 
-	r.HandleFunc("/login", loginHandler)
-	r.HandleFunc("/callback", callbackHandler)
-	r.HandleFunc("/logout", logoutHandler)
+	r.HandleFunc("/login", auth.LoginHandler)
+	r.HandleFunc("/callback", auth.CallbackHandler)
+	r.HandleFunc("/logout", auth.LogoutHandler)
 
 	r.HandleFunc("/api/sessions", middleware.IfAuthenticated(api.ProvideSessionsHandler)).Methods("GET")
 	r.HandleFunc("/api/addsession", middleware.IfAuthenticated(api.AddSessionHandler)).Methods("POST")

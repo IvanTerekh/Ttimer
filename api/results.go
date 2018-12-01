@@ -11,7 +11,7 @@ import (
 // ProvideResultsHandler provides a list of results for given session.
 var ProvideResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	session, err := retriveSessionFromUrl(r)
+	session, err := retriveSessionFromURL(r)
 	if err != nil {
 		handleError(err, w)
 		return
@@ -44,12 +44,12 @@ var SaveResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		handleError(err, w)
 		return
 	}
-	session.UserId = userId
+	session.UserID = userID
 
 	sessionExists, err := db.SessionExists(session)
 	if err != nil {
@@ -78,12 +78,12 @@ var DeleteResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.
 		return
 	}
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		handleError(err, w)
 		return
 	}
-	session.UserId = userId
+	session.UserID = userID
 
 	sessionExists, err := db.SessionExists(session)
 	if err != nil {
