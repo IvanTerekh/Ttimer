@@ -1,3 +1,4 @@
+// Package app contains global app variables and their initialization.
 package app
 
 import (
@@ -5,8 +6,8 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"log"
-	"ttimer/scrambles"
 	"os"
+	"ttimer/scrambles"
 )
 
 var (

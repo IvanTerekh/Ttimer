@@ -1,13 +1,14 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"ttimer/db"
 	"ttimer/model"
-	"encoding/json"
-	"io/ioutil"
 )
 
+// ProvideSessionsHandler provides all sessions of current user.
 var ProvideSessionsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	userId, err := retriveUserId(r)
 	if err != nil {
@@ -48,6 +49,7 @@ func encodeSessions(sessions []model.Session) ([]byte, error) {
 	return jsonString, nil
 }
 
+// DeleteSessionsHandler removes session with all it's results from db.
 var DeleteSessionsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	sessions, err := retriveSessionsFromBody(r)
 	if err != nil {
@@ -64,6 +66,7 @@ var DeleteSessionsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http
 	w.Write([]byte{})
 })
 
+// AddSessionHandler save new session into db
 var AddSessionHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	session, err := retriveNewSession(r)

@@ -1,13 +1,14 @@
 package api
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"ttimer/db"
-	"fmt"
 	"ttimer/model"
-	"encoding/json"
 )
 
+// ProvideResultsHandler provides a list of results for given session.
 var ProvideResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	session, err := retriveSessionFromUrl(r)
@@ -34,6 +35,7 @@ var ProvideResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http
 	}
 })
 
+// SaveResultsHandler saves given results into db.
 var SaveResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	session, results, err := retriveResultsAndSessionFromBody(r)
@@ -68,6 +70,7 @@ var SaveResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Re
 	w.Write([]byte(""))
 })
 
+// DeleteResultsHandler removes results from the db.
 var DeleteResultsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	session, results, err := retriveResultsAndSessionFromBody(r)
 	if err != nil {

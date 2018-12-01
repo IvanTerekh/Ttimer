@@ -1,12 +1,13 @@
+// Package api implements api of the web application.
 package api
 
 import (
-	"net/http"
+	"encoding/json"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"time"
 	"ttimer/model"
-	"io/ioutil"
-	"encoding/json"
 )
 
 func handleError(err error, w http.ResponseWriter) {
