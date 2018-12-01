@@ -1,13 +1,13 @@
 package server
 
 import (
-	"github.com/gorilla/mux"
-	"net/http"
 	"github.com/gorilla/handlers"
-	"os"
+	"github.com/gorilla/mux"
 	"log"
-	"ttimer/server/middleware"
+	"net/http"
+	"os"
 	"ttimer/api"
+	"ttimer/server/middleware"
 )
 
 func Start() {
@@ -36,7 +36,7 @@ func Start() {
 	r.HandleFunc("/api/isauthenticated", api.IsAuthenticatedHandler).Methods("GET")
 
 	log.Println("Listening: " + os.Getenv("TTIMER_PORT"))
-	err := http.ListenAndServe(":" + os.Getenv("TTIMER_PORT"), handlers.LoggingHandler(os.Stdout, r), )
+	err := http.ListenAndServe(":"+os.Getenv("TTIMER_PORT"), handlers.LoggingHandler(os.Stdout, r))
 	if err != nil {
 		log.Fatal(err)
 	}
