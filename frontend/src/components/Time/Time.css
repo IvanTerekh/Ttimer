@@ -1,0 +1,27 @@
+.notReady {
+    color: red;
+}
+
+.ready {
+    color: green;
+}
+
+.usual {
+    color: black;
+}
+
+.time {
+    text-align: center;
+    font-size: 6rem;
+    font-family: verdana, monospace;
+    margin: 3px;
+    -webkit-touch-callout: none;
+    -webkit-user-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-modify: none;
+    -webkit-highlight: none;
+}
