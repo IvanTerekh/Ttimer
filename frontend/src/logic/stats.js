@@ -1,4 +1,4 @@
-var avgs = [5, 12, 50, 100, 1000];
+export var avgs = [5, 12, 50, 100, 1000];
 
 function avgOf(res, n) {
     if (n > res.length) {
@@ -41,11 +41,11 @@ function ignoreBestWorst(arr, n) {
     }
 }
 
-function calcStats(res) {
+export function calcStats(res) {
     res = res.map(r => (r.centis));
 
     let stats = {};
-    for (n of avgs) {
+    for (let n of avgs) {
         stats[n] = {best: Infinity, current: avgOf(res, n)}
     }
 
@@ -62,7 +62,7 @@ function calcStats(res) {
     return stats
 }
 
-function updateStats(old, res) {
+export function updateStats(old, res) {
     res = res.map(r => (r.centis));
 
     let stats = Object.assign({}, old);
