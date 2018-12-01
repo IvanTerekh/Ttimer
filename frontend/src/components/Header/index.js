@@ -16,7 +16,7 @@ export default class Header extends React.Component {
     componentDidMount() {
         const auth = this.props.auth;
         if (auth) {
-            axios.get("/api/userinfo")
+            axios.get('/api/userinfo')
                 .then(response => {
                     let profile = response.data;
                     if (profile.sub.startsWith("vkontakte")) {

@@ -24,7 +24,7 @@ export default class SessionSelector extends React.Component {
 
     componentDidMount() {
         if (this.props.auth) {
-            axios.get("/api/sessions")
+            axios.get('/api/sessions')
                 .then(response => {
                     let sessions = response.data;
                     if (sessions.length === 0) {

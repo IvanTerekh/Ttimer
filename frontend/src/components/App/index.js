@@ -1,6 +1,4 @@
 import React from 'react';
-import 'spectre.css';
-import './App.css';
 import Timer from '../Timer'
 
 const axios = require('axios');
@@ -10,7 +8,6 @@ class App extends React.Component {
         super(props);
         this.state = {
             app: null
-
         };
     }
 
@@ -20,7 +17,7 @@ class App extends React.Component {
                 const auth = response.data;
                 this.setState({
                     app: <Timer auth={auth}/>
-                })
+                });
             });
     }
 

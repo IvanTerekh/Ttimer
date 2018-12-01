@@ -38,7 +38,7 @@ export default class Time extends React.Component {
         });
 
         this.timerId = setInterval(
-            () => this.tick(), 9);
+            () => this.tick(), 1000/60);
         document.ontouchstart = this.keydown;
     }
 
