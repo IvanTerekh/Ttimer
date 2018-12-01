@@ -8,12 +8,14 @@ import (
 	"ttimer/server/middleware"
 )
 
+// IsAuthenticatedHandler tells client if user is authenticated.
 var IsAuthenticatedHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	authenticated := middleware.IsAuthenticated(w, r)
 	w.Write([]byte(fmt.Sprint(authenticated)))
 })
 
+// UserInfoHandler provides information about user
 var UserInfoHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	session, err := app.Store.Get(r, "auth-session")
 	if err != nil {

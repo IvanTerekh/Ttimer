@@ -7,6 +7,7 @@ import (
 	"ttimer/app"
 )
 
+// IfAuthenticated passes request to given handler only if user is authenticated.
 func IfAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		auth := IsAuthenticated(w, r)
@@ -19,6 +20,7 @@ func IfAuthenticated(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// IsAuthenticated checks if user did log in.
 func IsAuthenticated(w http.ResponseWriter, r *http.Request) bool {
 	session, err := app.Store.Get(r, "auth-session")
 	if err != nil {

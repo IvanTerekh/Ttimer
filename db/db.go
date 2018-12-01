@@ -2,11 +2,12 @@ package db
 
 import (
 	"database/sql"
-	"log"
-	"ttimer/model"
-	_ "github.com/go-sql-driver/mysql"
 	"errors"
+	// Importing mysql driver.
+	_ "github.com/go-sql-driver/mysql"
+	"log"
 	"os"
+	"ttimer/model"
 )
 
 func init() {
@@ -21,8 +22,8 @@ func init() {
 
 func openDb() *sql.DB {
 	db, err := sql.Open("mysql",
-		os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASSWORD")+
-			"@tcp("+ os.Getenv("DB_IP")+ ":"+ os.Getenv("DB_PORT")+ ")/ttimer")
+		os.Getenv("DB_USER")+":"+os.Getenv("DB_PASSWORD")+
+			"@tcp("+os.Getenv("DB_IP")+":"+os.Getenv("DB_PORT")+")/ttimer")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,6 +31,7 @@ func openDb() *sql.DB {
 	return db
 }
 
+// SelectResults gets results from the database.
 func SelectResults(session *model.Session) ([]model.Result, error) {
 	db := openDb()
 	defer db.Close()
@@ -48,6 +50,7 @@ func SelectResults(session *model.Session) ([]model.Result, error) {
 	return results, nil
 }
 
+// SelectSessions gets sessions from the database.
 func SelectSessions(userId string) ([]model.Session, error) {
 	db := openDb()
 	defer db.Close()
@@ -67,6 +70,7 @@ func SelectSessions(userId string) ([]model.Session, error) {
 	return sessions, nil
 }
 
+// InsertResults adds resuts to the database.
 func InsertResults(reses *[]model.Result, session *model.Session) error {
 	db := openDb()
 	defer db.Close()
@@ -135,6 +139,7 @@ func retriveSessions(rows *sql.Rows) ([]model.Session, error) {
 	return sessions, nil
 }
 
+// InsertSession adds session to the database.
 func InsertSession(session *model.Session) error {
 	db := openDb()
 	defer db.Close()
@@ -166,6 +171,7 @@ func getSessionId(db *sql.DB, session *model.Session) (int, error) {
 	return id, nil
 }
 
+// SessionExists checks if session is already added to the database.
 func SessionExists(session *model.Session) (bool, error) {
 	db := openDb()
 	defer db.Close()
@@ -180,6 +186,7 @@ func SessionExists(session *model.Session) (bool, error) {
 	return rows.Next(), nil
 }
 
+// DeleteSessions deletes session and all it's results.
 func DeleteSessions(sessions *[]model.Session) error {
 	db := openDb()
 	defer db.Close()
@@ -218,6 +225,7 @@ func DeleteSessions(sessions *[]model.Session) error {
 	return nil
 }
 
+// DeleteResults deletes results from database.
 func DeleteResults(reses *[]model.Result, session *model.Session) error {
 	db := openDb()
 	defer db.Close()

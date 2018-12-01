@@ -1,3 +1,4 @@
+// Package server implements a web server.
 package server
 
 import (
@@ -10,6 +11,7 @@ import (
 	"ttimer/server/middleware"
 )
 
+// Start runs a new server
 func Start() {
 	r := mux.NewRouter()
 
