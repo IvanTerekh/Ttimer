@@ -1,21 +1,22 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"ttimer/db"
 	"ttimer/model"
-	"encoding/json"
-	"io/ioutil"
 )
 
+// ProvideSessionsHandler provides all sessions of current user.
 var ProvideSessionsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		handleError(err, w)
 		return
 	}
 
-	sessions, err := db.SelectSessions(userId)
+	sessions, err := db.SelectSessions(userID)
 	if err != nil {
 		handleError(err, w)
 		return
@@ -48,6 +49,7 @@ func encodeSessions(sessions []model.Session) ([]byte, error) {
 	return jsonString, nil
 }
 
+// DeleteSessionsHandler removes session with all it's results from db.
 var DeleteSessionsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	sessions, err := retriveSessionsFromBody(r)
 	if err != nil {
@@ -64,6 +66,7 @@ var DeleteSessionsHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http
 	w.Write([]byte{})
 })
 
+// AddSessionHandler save new session into db
 var AddSessionHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	session, err := retriveNewSession(r)
@@ -96,13 +99,13 @@ func retriveSessionsFromBody(r *http.Request) (*[]model.Session, error) {
 
 	sessions := cont.Sessions
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		return nil, err
 	}
 
 	for i := range sessions {
-		sessions[i].UserId = userId
+		sessions[i].UserID = userID
 	}
 
 	return &sessions, err
@@ -121,13 +124,13 @@ func retriveNewSession(r *http.Request) (*model.Session, error) {
 	var container sessionContainer
 	err = json.Unmarshal(jsonStr, &container)
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		return nil, err
 	}
 
 	session := model.Session{
-		UserId: userId,
+		UserID: userID,
 		Name:   container.Name,
 		Event:  container.Event,
 	}
@@ -135,16 +138,16 @@ func retriveNewSession(r *http.Request) (*model.Session, error) {
 	return &session, err
 }
 
-func retriveSessionFromUrl(r *http.Request) (*model.Session, error) {
+func retriveSessionFromURL(r *http.Request) (*model.Session, error) {
 
 	var session model.Session
 
-	userId, err := retriveUserId(r)
+	userID, err := retriveUserID(r)
 	if err != nil {
 		return nil, err
 	}
 
-	session.UserId = userId
+	session.UserID = userID
 	session.Name = r.URL.Query().Get("sessionname")
 	session.Event = r.URL.Query().Get("event")
 	return &session, nil
