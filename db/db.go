@@ -31,6 +31,9 @@ func init() {
 	log.Printf("DB connection: OK. Host: %s:%s", os.Getenv("DB_IP"), os.Getenv("DB_PORT"))
 
 	err = prepareStatements()
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 func prepareStatements() error {

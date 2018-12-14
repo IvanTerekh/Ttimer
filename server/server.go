@@ -18,6 +18,8 @@ func Start() {
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",
 		http.FileServer(http.Dir("static"))))
+	r.PathPrefix("/.well-known/pki-validation/").Handler(http.StripPrefix("/.well-known/pki-validation/",
+		http.FileServer(http.Dir("validation"))))
 	r.HandleFunc("/", HomeHandler)
 
 	r.HandleFunc("/login", auth.LoginHandler)
