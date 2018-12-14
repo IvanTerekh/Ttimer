@@ -5,21 +5,14 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
-
-type scramble struct {
-	event string
-	moves string
-}
 
 // ScrambleProvider contains all scrambles. It provides functions to update and get scrambles.
 type ScrambleProvider struct {
 	scrambles map[string]string
-	finish    chan int
-	get       map[string]chan string
-	request   chan string
-	update    chan scramble
+	mx        sync.RWMutex
 }
 
 // Events contains all possible events.
@@ -44,8 +37,9 @@ var Events = []string{
 // Get returns an actual scramble for given event.
 func (sp *ScrambleProvider) Get(event string) string {
 	event = trimSuffix(event)
-	sp.request <- event
-	return <-sp.get[event]
+	sp.mx.RLock()
+	defer sp.mx.RUnlock()
+	return sp.scrambles[event]
 }
 
 func trimSuffix(event string) string {
@@ -54,32 +48,12 @@ func trimSuffix(event string) string {
 	return event
 }
 
-func (sp *ScrambleProvider) manage() {
-	select {
-	case event := <-sp.request:
-		sp.get[event] <- sp.scrambles[event]
-	case scramble := <-sp.update:
-		sp.scrambles[scramble.event] = scramble.moves
-	case <-sp.finish:
-		return
-	}
-}
-
 // NewScrambleProvider creates an instance of scrambling provider
-func NewScrambleProvider(finish chan int) *ScrambleProvider {
+func NewScrambleProvider() *ScrambleProvider {
 	sp := ScrambleProvider{
 		scrambles: make(map[string]string),
-		finish:    finish,
-		get:       createGetChans(),
-		request:   make(chan string),
-		update:    make(chan scramble),
 	}
 	sp.startUpdating()
-	go func() {
-		for {
-			sp.manage()
-		}
-	}()
 	return &sp
 }
 
@@ -88,6 +62,7 @@ func (sp *ScrambleProvider) startUpdating() {
 	dur, _ := time.ParseDuration(os.Getenv("SCRAMBLING_INTERVAL"))
 	interval := time.Duration(dur.Nanoseconds() / n)
 	for _, event := range Events {
+		// Scrambles are generated with equal intervals to avoid scrambling server overload.
 		time.Sleep(interval)
 		go func(ev string) {
 			for {
@@ -104,15 +79,9 @@ func (sp *ScrambleProvider) updateScramble(event string) {
 		handleError(err)
 		return
 	}
-	sp.update <- scramble{event: event, moves: newScr}
-}
-
-func createGetChans() map[string]chan string {
-	get := make(map[string]chan string)
-	for _, event := range Events {
-		get[event] = make(chan string)
-	}
-	return get
+	sp.mx.Lock()
+	defer sp.mx.Unlock()
+	sp.scrambles[event] = newScr
 }
 
 func handleError(err error) {

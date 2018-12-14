@@ -1,3 +1,4 @@
+// Package app contains global app variables and their initialization.
 package app
 
 import (
@@ -5,12 +6,14 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"log"
-	"ttimer/scrambles"
 	"os"
+	"ttimer/scrambles"
 )
 
 var (
-	Store     *sessions.FilesystemStore
+	// Store is server store for auth session.
+	Store *sessions.FilesystemStore
+	// Scrambler stores and updates scrambles.
 	Scrambler *scrambles.ScrambleProvider
 )
 
@@ -22,7 +25,7 @@ func init() {
 
 	Store = sessions.NewFilesystemStore("", []byte(os.Getenv("SESSION_KEY")))
 
-	Scrambler = scrambles.NewScrambleProvider(nil)
+	Scrambler = scrambles.NewScrambleProvider()
 	log.Println("Scramblers provider initialized")
 
 	gob.Register(map[string]interface{}{})
