@@ -41,7 +41,7 @@ func Start() {
 	r.HandleFunc("/api/isauthenticated", api.IsAuthenticatedHandler).Methods("GET")
 
 	log.Println("Listening: " + os.Getenv("TTIMER_PORT"))
-	err := http.ListenAndServe(":"+os.Getenv("TTIMER_PORT"), handlers.LoggingHandler(os.Stdout, r))
+	err := http.ListenAndServeTLS(":"+os.Getenv("TTIMER_PORT"), "cert.pem", "key.pem", handlers.LoggingHandler(os.Stdout, r))
 	if err != nil {
 		log.Fatal(err)
 	}
