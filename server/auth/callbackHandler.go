@@ -3,11 +3,11 @@ package auth
 import (
 	"context"
 	"encoding/json"
+	"github.com/ivanterekh/ttimer/app"
 	"golang.org/x/oauth2"
 	"log"
 	"net/http"
 	"os"
-	"ttimer/app"
 )
 
 // CallbackHandler handles callback from auth provider.

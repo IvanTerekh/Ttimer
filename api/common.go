@@ -3,11 +3,11 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/ivanterekh/ttimer/model"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
-	"ttimer/model"
 )
 
 func handleError(err error, w http.ResponseWriter) {

@@ -4,10 +4,10 @@ package app
 import (
 	"encoding/gob"
 	"github.com/gorilla/sessions"
+	"github.com/ivanterekh/ttimer/scrambles"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
-	"ttimer/scrambles"
 )
 
 var (

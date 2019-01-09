@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ivanterekh/ttimer/app"
+	"github.com/ivanterekh/ttimer/server/auth"
 	"net/http"
-	"ttimer/app"
-	"ttimer/server/auth"
 )
 
 // IsAuthenticatedHandler tells client if user is authenticated.

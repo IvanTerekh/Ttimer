@@ -2,10 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/ivanterekh/ttimer/db"
+	"github.com/ivanterekh/ttimer/model"
 	"io/ioutil"
 	"net/http"
-	"ttimer/db"
-	"ttimer/model"
 )
 
 // ProvideSessionsHandler provides all sessions of current user.

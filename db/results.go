@@ -1,7 +1,7 @@
 package db
 
 import (
-	"ttimer/model"
+	"github.com/ivanterekh/ttimer/model"
 )
 
 // SelectResults gets results from the database.

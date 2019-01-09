@@ -2,9 +2,9 @@ package auth
 
 import (
 	"github.com/gorilla/sessions"
+	"github.com/ivanterekh/ttimer/app"
 	"log"
 	"net/http"
-	"ttimer/app"
 )
 
 // IsAuthenticated checks if user did log in.

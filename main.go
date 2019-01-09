@@ -1,9 +1,9 @@
 package main
 
 import (
-	_ "ttimer/app"
-	_ "ttimer/db"
-	"ttimer/server"
+	_ "github.com/ivanterekh/ttimer/app"
+	_ "github.com/ivanterekh/ttimer/db"
+	"github.com/ivanterekh/ttimer/server"
 )
 
 func main() {

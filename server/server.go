@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/ivanterekh/ttimer/api"
+	"github.com/ivanterekh/ttimer/server/auth"
+	"github.com/ivanterekh/ttimer/server/middleware"
 	"log"
 	"net/http"
 	"os"
-	"ttimer/api"
-	"ttimer/server/auth"
-	"ttimer/server/middleware"
 )
 
 // Start runs a new server

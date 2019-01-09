@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
+	"github.com/ivanterekh/ttimer/scrambles"
 	"net/http"
-	"ttimer/scrambles"
 )
 
 // EventsHandler provides a list of all possible events.

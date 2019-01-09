@@ -2,7 +2,7 @@ package db
 
 import (
 	"errors"
-	"ttimer/model"
+	"github.com/ivanterekh/ttimer/model"
 )
 
 // SelectSessions gets sessions from the database.

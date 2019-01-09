@@ -1,10 +1,10 @@
 package auth
 
 import (
+	"github.com/ivanterekh/ttimer/app"
 	"net/http"
 	"net/url"
 	"os"
-	"ttimer/app"
 )
 
 // LogoutHandler handles user's logout.

@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ivanterekh/ttimer/db"
+	"github.com/ivanterekh/ttimer/model"
 	"net/http"
-	"ttimer/db"
-	"ttimer/model"
 )
 
 // ProvideResultsHandler provides a list of results for given session.

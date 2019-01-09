@@ -3,10 +3,10 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"github.com/ivanterekh/ttimer/app"
 	"golang.org/x/oauth2"
 	"net/http"
 	"os"
-	"ttimer/app"
 )
 
 // LoginHandler handles user's login.

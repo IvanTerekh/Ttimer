@@ -1,8 +1,8 @@
 package middleware
 
 import (
+	"github.com/ivanterekh/ttimer/server/auth"
 	"net/http"
-	"ttimer/server/auth"
 )
 
 // IfAuthenticated passes request to given handler only if user is authenticated.

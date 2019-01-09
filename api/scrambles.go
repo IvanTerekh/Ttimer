@@ -1,8 +1,8 @@
 package api
 
 import (
+	"github.com/ivanterekh/ttimer/app"
 	"net/http"
-	"ttimer/app"
 )
 
 // ScrambleHndler provides a scrambler for given event.
