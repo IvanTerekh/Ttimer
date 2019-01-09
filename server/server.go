@@ -2,6 +2,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
@@ -14,6 +15,8 @@ import (
 
 // Start runs a new server
 func Start() {
+	go http.ListenAndServe(":80", http.HandlerFunc(redirectHttp))
+
 	r := mux.NewRouter()
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/",
@@ -40,9 +43,26 @@ func Start() {
 	r.HandleFunc("/api/userinfo", api.UserInfoHandler).Methods("GET")
 	r.HandleFunc("/api/isauthenticated", api.IsAuthenticatedHandler).Methods("GET")
 
+	var err error
+
 	log.Println("Listening: " + os.Getenv("TTIMER_PORT"))
-	err := http.ListenAndServeTLS(":"+os.Getenv("TTIMER_PORT"), "cert.pem", "key.pem", handlers.LoggingHandler(os.Stdout, r))
+	if os.Getenv("PRODUCTION") == "TRUE" {
+		err = http.ListenAndServeTLS(":"+os.Getenv("TTIMER_PORT"),
+			"cert.pem", "key.pem", handlers.LoggingHandler(os.Stdout, r))
+	} else {
+		err = http.ListenAndServe(":"+os.Getenv("TTIMER_PORT"), handlers.LoggingHandler(os.Stdout, r))
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func redirectHttp(w http.ResponseWriter, req *http.Request) {
+	// remove/add not default ports from req.Host
+	target := "https://" + req.Host + req.URL.Path
+	if len(req.URL.RawQuery) > 0 {
+		target += "?" + req.URL.RawQuery
+	}
+	fmt.Printf("redirect to: %s", target)
+	http.Redirect(w, req, target, http.StatusTemporaryRedirect)
 }
