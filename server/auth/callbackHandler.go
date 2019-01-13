@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/ivanterekh/ttimer/app"
 	"golang.org/x/oauth2"
-	"log"
 	"net/http"
 	"os"
 )
@@ -18,7 +17,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	conf := &oauth2.Config{
 		ClientID:     os.Getenv("AUTH0_CLIENT_ID"),
 		ClientSecret: os.Getenv("AUTH0_CLIENT_SECRET"),
-		RedirectURL:  "http://" + os.Getenv("TTIMER_DOMAIN"),
+		RedirectURL:  protocol + "://" + os.Getenv("TTIMER_DOMAIN"),
 		Scopes:       []string{"openid", "profile"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://" + authDomain + "/authorize",
@@ -28,7 +27,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 	session, err := app.Store.Get(r, "state")
 	if err != nil {
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 
@@ -41,7 +40,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := conf.Exchange(context.TODO(), code)
 	if err != nil {
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 
@@ -49,7 +48,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	client := conf.Client(context.TODO(), token)
 	resp, err := client.Get("https://" + authDomain + "/userinfo")
 	if err != nil {
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 
@@ -57,15 +56,13 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	var profile map[string]interface{}
 	if err = json.NewDecoder(resp.Body).Decode(&profile); err != nil {
-		log.Println(err)
-		http.Error(w, "", http.StatusInternalServerError)
+		handleError(err, w, r)
 		return
 	}
 
 	session, err = app.Store.Get(r, "auth-session")
 	if err != nil {
-		log.Println(err)
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 
@@ -74,7 +71,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	session.Values["profile"] = profile
 	err = session.Save(r, w)
 	if err != nil {
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 
