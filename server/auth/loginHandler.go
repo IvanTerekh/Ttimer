@@ -18,7 +18,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	conf := &oauth2.Config{
 		ClientID:     os.Getenv("AUTH0_CLIENT_ID"),
 		ClientSecret: os.Getenv("AUTH0_CLIENT_SECRET"),
-		RedirectURL:  "http://" + os.Getenv("TTIMER_DOMAIN") + "/callback",
+		RedirectURL:  protocol + "://" + os.Getenv("TTIMER_DOMAIN") + "/callback",
 		Scopes:       []string{"openid", "profile"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://" + domain + "/authorize",
@@ -37,15 +37,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := app.Store.Get(r, "state")
 	if err != nil {
-		deleteCookie("state", w)
-		deleteCookie("auth-session", w)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		handleError(err, w, r)
 		return
 	}
 	session.Values["state"] = state
 	err = session.Save(r, w)
 	if err != nil {
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 

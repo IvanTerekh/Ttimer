@@ -5,11 +5,24 @@ import (
 	"github.com/gorilla/sessions"
 	"log"
 	"net/http"
+	"os"
 )
 
-func handleError(err error, w http.ResponseWriter) {
-	log.Panic(err)
-	http.Error(w, "Server error", http.StatusInternalServerError)
+var protocol string
+
+func init() {
+	if os.Getenv("PRODUCTION") == "TRUE" {
+		protocol = "https"
+	} else {
+		protocol = "http"
+	}
+}
+
+func handleError(err error, w http.ResponseWriter, r *http.Request) {
+	deleteCookie("state", w)
+	deleteCookie("auth-session", w)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	log.Println(err)
 }
 
 func deleteCookie(name string, w http.ResponseWriter) {

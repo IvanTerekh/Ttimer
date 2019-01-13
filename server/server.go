@@ -15,7 +15,6 @@ import (
 
 // Start runs a new server
 func Start() {
-	go http.ListenAndServe(":80", http.HandlerFunc(redirectHttp))
 
 	r := mux.NewRouter()
 
@@ -47,6 +46,8 @@ func Start() {
 
 	log.Println("Listening: " + os.Getenv("TTIMER_PORT"))
 	if os.Getenv("PRODUCTION") == "TRUE" {
+		go http.ListenAndServe(":80", http.HandlerFunc(redirectHttp))
+
 		err = http.ListenAndServeTLS(":"+os.Getenv("TTIMER_PORT"),
 			"cert.pem", "key.pem", handlers.LoggingHandler(os.Stdout, r))
 	} else {

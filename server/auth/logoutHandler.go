@@ -12,7 +12,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	session, err := app.Store.Get(r, "auth-session")
 	if err != nil {
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 	session.Options.MaxAge = -1
@@ -23,13 +23,13 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	var Url *url.URL
 	Url, err = url.Parse("https://" + domain)
 	if err != nil {
-		handleError(err, w)
+		handleError(err, w, r)
 		return
 	}
 
 	Url.Path += "/v2/logout"
 	parameters := url.Values{}
-	parameters.Add("returnTo", "http://"+os.Getenv("TTIMER_DOMAIN"))
+	parameters.Add("returnTo", protocol+"://"+os.Getenv("TTIMER_DOMAIN"))
 	parameters.Add("client_id", os.Getenv("AUTH0_CLIENT_ID"))
 	Url.RawQuery = parameters.Encode()
 
